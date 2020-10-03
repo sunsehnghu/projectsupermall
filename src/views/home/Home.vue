@@ -1,12 +1,14 @@
 <template>
     <div id="home">
         <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+        <scroll class="content" ref="scroll">
         <home-swiper :banners="banners"></home-swiper>
         <recommend-view :recommends="recommends"></recommend-view>
         <feature-view/>
         <tab-control class="tab-control"    :titles="['流行','新款','精选']" @tabClick="tabClick"/>
         <goods-list :goods="goods[currentType].list"></goods-list>
-       
+       </scroll>
+       <back-top @click.native="backClick"></back-top>
     </div>
 </template>
 <script>
@@ -18,6 +20,8 @@
    import NavBar from 'components/common/navbar/NavBar'
    import TabControl from 'components/content/tabControl/TabControl'
    import GoodsList from 'components/content/goods/GoodsList'
+   import Scroll from 'components/common/scroll/Scroll'
+   import BackTop from 'components/content/backTop/BackTop'
 
    import {getHomeMultidata,getHomeGoods} from 'network/home'
   
@@ -29,7 +33,9 @@ export default {
         RecommendView,
         FeatureView,
         TabControl,
-        GoodsList
+        GoodsList,
+        Scroll,
+        BackTop
     },
     data() {
         return {
@@ -66,6 +72,9 @@ export default {
                     break
             }
         },
+        backClick(){
+            this.$refs.scroll.scrollTo(0,0);
+        },
         //* 网络请求相关的方法
         
         getHomeMultidata(){
@@ -89,6 +98,8 @@ export default {
 <style scoped>
      #home{
          padding-top:44px ;
+         height: 100vh;
+         position: relative;
      }
     .home-nav{
         background-color: var(--color-tint);
@@ -104,5 +115,20 @@ export default {
         top: 44px;
         z-index: 9;
         
+    }
+    /* .content{
+        height: calc(100% - 93px);
+        
+        overflow: hidden;
+        margin-top: 70px;
+        
+    } */
+    .content{
+        overflow: hidden;
+        position: absolute;
+        top: 44px;
+        bottom: 49px;
+        left: 0;
+        right: 0;
     }
 </style>
