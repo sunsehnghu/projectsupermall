@@ -32,6 +32,7 @@ export default {
         this.scroll=new BScroll(this.$refs.wrapper,{
             observeDOM:true,
             click:true,
+            
             probeType:this.probeType,
             pullUpLoad:this.pullUpLoad
         })
