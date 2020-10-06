@@ -59,9 +59,19 @@ export default {
             currentType:'pop',
             isShowBackTop:false,
             tabOffsetTop:0,
-            isTabFixed:false
+            isTabFixed:false,
+            saveY:0
 
         }
+    },
+    //设置首页位置的保持
+    activated() {
+        this.$refs.scroll.scrollTo(0,this.saveY,100)
+        this.$refs.scroll.refresh()
+    },
+    deactivated() {
+        this.saveY = this.$refs.scroll.getCurrentY()
+        
     },
     created() {
         //1.请求多个数据
