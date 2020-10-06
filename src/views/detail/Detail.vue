@@ -1,14 +1,14 @@
 <template>
     <div id="detail">
-        <detail-nav-bar class="detail-nav"/>
-        <scroll class="content" :pullUpLoad="true">
+        <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
+        <scroll class="content" :pullUpLoad="true" ref="scroll">
         <detail-swiper :top-images="topImages"/>
         <detail-base-info :goods="goods"></detail-base-info>
         <detail-shop-info :shop="shop"></detail-shop-info>
         <detail-goods-info :detail-info="detailInfo"></detail-goods-info>
-        <detail-param-info :param-info="paramInfo"></detail-param-info>
-        <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
-        <goods-list :goods="recommends"/>
+        <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
+        <detail-comment-info ref="comment"   :comment-info="commentInfo"></detail-comment-info>
+        <goods-list  ref="recommend"  :goods="recommends"/>
         </scroll>
 
         
@@ -25,6 +25,8 @@ import DetailCommentInfo from './childComps/DetailCommentInfo'
 import Scroll from 'components/common/scroll/Scroll'
 import GoodsList from 'components/content/goods/GoodsList'
 import {getDetail ,Goods, Shop,GoodsParam,getRecommend} from '../../network/detail'
+import {debounce} from '../../common/utils.js'
+import {itemListenerMixin} from '../../common/mixin'
 export default {
     name:"Detail",
     components:{
@@ -38,6 +40,7 @@ export default {
         DetailCommentInfo,
         GoodsList
     },
+    mixins:[itemListenerMixin],
     data() {
         return {
             iid: null,
@@ -47,7 +50,10 @@ export default {
             detailInfo:{},
             paramInfo:{},
             commentInfo:{},
-            recommends:[]
+            recommends:[],
+            themeTopYs:[],
+
+            itemImgListener:null
 
         }
     },
@@ -73,14 +79,37 @@ export default {
          if(data.rate.cRate !== 0){
              this.commentInfo =data.rate.list[0]
          }
+      
         })
        //3.取出推荐数据
        getRecommend().then(res=>{
            this.recommends =res.data.list
+          
        })
-
        
     },
+    mounted() {
+      //home中没有改  可以参考 这里新引进了混合函数itemListenerMixin
+       
+    },
+     destroyed(){
+            this.$bus.$off('itemImageLoad',this.itemImgListener)
+        },
+      updated() {
+          this.themeTopYs =[]
+          this.themeTopYs.push(0);
+          this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+          this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+          console.log(this.themeTopYs);
+          
+
+      },
+    methods: {
+        titleClick(index){
+             this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
+        }
+    },  
 }
 </script>
 <style scoped>

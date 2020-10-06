@@ -60,7 +60,8 @@ export default {
             isShowBackTop:false,
             tabOffsetTop:0,
             isTabFixed:false,
-            saveY:0
+            saveY:0,
+            itemImgListener:null
 
         }
     },
@@ -70,8 +71,10 @@ export default {
         this.$refs.scroll.refresh()
     },
     deactivated() {
+        //1.保存Y值
         this.saveY = this.$refs.scroll.getCurrentY()
-        
+        //2.取消全局事件的监听
+        this.$bus.$off('itemImagLoad',this.itemImgListener)
     },
     created() {
         //1.请求多个数据
@@ -88,11 +91,14 @@ export default {
 
         const refresh =debounce( this.$refs.scroll.refresh)
         //3.监听item中图片加载完成
-        this.$bus.$on('itemImageLoad',()=>{
+        this.itemImgListener=()=>{
+              refresh()
+        }
+        this.$bus.$on('itemImageLoad',this.itemImgListener
             
             //  this.$refs.scroll.refresh()
-            refresh()
-        })
+            // refresh()
+        )
         //2.获取tabcontrol的offsettop
         //所有的组件都有一个$el属性，用来获取组件的元素
         // console.log(this.$refs.TabControl.$el.offsetTop); 
