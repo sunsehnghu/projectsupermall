@@ -1,13 +1,18 @@
 import {debounce} from './utils'
 export const itemListenerMixin={
+    data() {
+        return {
+            refresh:null
+        }
+    },
     mounted() {
-        const refresh =debounce( this.$refs.scroll.refresh)
+        this.refresh =debounce( this.$refs.scroll.refresh)
         this.itemImgListener=()=>{
-            refresh()
+            this.refresh()
         }
         this.$bus.$on('itemImageLoad',this.itemImgListener
             //    refresh()
         )
-       console.log('我是混入中的内容');
+    //    console.log('我是混入中的内容');
     },
 }

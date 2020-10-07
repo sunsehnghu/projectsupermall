@@ -1,11 +1,11 @@
 <template>
     <div id="detail">
-        <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-        <scroll class="content" :pullUpLoad="true" ref="scroll">
+        <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
+        <scroll class="content" :pullUpLoad="true" ref="scroll" @scroll="contentScroll">
         <detail-swiper :top-images="topImages"/>
         <detail-base-info :goods="goods"></detail-base-info>
         <detail-shop-info :shop="shop"></detail-shop-info>
-        <detail-goods-info :detail-info="detailInfo"></detail-goods-info>
+        <detail-goods-info :detail-info="detailInfo" @detailImageLoad="detailImageLoad"></detail-goods-info>
         <detail-param-info ref="params" :param-info="paramInfo"></detail-param-info>
         <detail-comment-info ref="comment"   :comment-info="commentInfo"></detail-comment-info>
         <goods-list  ref="recommend"  :goods="recommends"/>
@@ -52,8 +52,9 @@ export default {
             commentInfo:{},
             recommends:[],
             themeTopYs:[],
-
-            itemImgListener:null
+            getThemeTopY:null,
+            itemImgListener:null,
+            currentIndex:0
 
         }
     },
@@ -86,6 +87,15 @@ export default {
            this.recommends =res.data.list
           
        })
+       //4.给getThemeTopY赋值(对给this.themetopys赋值的操作进行防抖)
+       this.getThemeTopY =debounce(()=>{
+                 this.themeTopYs =[]
+          this.themeTopYs.push(0);
+          this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+          this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+          console.log(this.themeTopYs);
+       },200)
        
     },
     mounted() {
@@ -95,19 +105,39 @@ export default {
      destroyed(){
             this.$bus.$off('itemImageLoad',this.itemImgListener)
         },
-      updated() {
-          this.themeTopYs =[]
-          this.themeTopYs.push(0);
-          this.themeTopYs.push(this.$refs.params.$el.offsetTop)
-          this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
-          this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
-          console.log(this.themeTopYs);
-          
+    
 
-      },
+      
     methods: {
+        detailImageLoad(){
+           this.refresh()
+           this.getThemeTopY()
+        //     this.themeTopYs =[]
+        //   this.themeTopYs.push(0);
+        //   this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+        //   this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+        //   this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+        //   console.log(this.themeTopYs);
+        },
         titleClick(index){
              this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],100)
+        },
+        contentScroll(position){
+            //.获取y值
+              const positionY = -position.y
+              //2.poistion中的y与主题中的进行对比
+              //[0,3000,6000,9000]
+              //poistion 在0与3000之间 index为0 3000-6000 index为 3 以此类推
+              for(let i =0;i<this.themeTopYs.length;i++){
+                  if( this.currentIndex!=i && i<this.themeTopYs.length-1 && positionY>=this.themeTopYs[i] &&positionY<this.themeTopYs[i+1]){
+                      this.currentIndex =i
+                      this.$refs.nav.currentIndex = this.currentIndex
+                  }
+                  else if(this.currentIndex!=i && i == this.themeTopYs.length-1 && positionY>=this.themeTopYs[i]){
+                      this.currentIndex=i
+                      this.$refs.nav.currentIndex = this.currentIndex
+                  }
+              }
         }
     },  
 }
