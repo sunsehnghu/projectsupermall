@@ -2,11 +2,7 @@
     <div id="detail">
         <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
         <scroll class="content" :pullUpLoad="true" ref="scroll" @scroll="contentScroll">
-            <ul>
-                <li v-for="(item) in $store.state.cartList" :key="item.index">
-                    {{item}}
-                </li>
-            </ul>
+            
         <detail-swiper :top-images="topImages"/>
         <detail-base-info :goods="goods"></detail-base-info>
         <detail-shop-info :shop="shop"></detail-shop-info>
@@ -172,7 +168,8 @@ export default {
              
             
              //2.将商品添加到购物车中
-             this.$store.commit('addCart',product)
+            //  this.$store.commit('addCart',product)
+            this.$store.dispatch('addCart',product)
          }
     }, 
      
