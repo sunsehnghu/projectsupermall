@@ -6,12 +6,15 @@
         <!-- 商品列表 -->
         
        <cart-list></cart-list>
+       <!-- 商品的求和 -->
+        <cart-button-bar></cart-button-bar>
        
     </div>
 </template>
 <script>
 import NavBar from 'components/common/navbar/NavBar'
 import CartList from './childComps/CarList'
+import CartButtonBar from './childComps/CartButtonBar'
 
 
 
@@ -21,6 +24,7 @@ export default {
     components:{
         NavBar,
         CartList,
+        CartButtonBar
         
     },
     computed: {

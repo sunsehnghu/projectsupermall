@@ -1,7 +1,7 @@
 <template>
     <div class="cart-list">
-        <scroll class="content" :pullUpLoad="true">
-        <cart-list-item v-for="(item) in cartList" :key="item.index" :product="item"></cart-list-item>
+        <scroll class="content" :pullUpLoad="true" ref="scroll">
+        <cart-list-item v-for="(item) in cartList" :key="item.index" :item-info="item"></cart-list-item>
         </scroll>
     </div>
 </template>
@@ -21,14 +21,20 @@ export default {
         
         ...mapGetters(['cartList'])
     },
+    methods: {
+        activated() {
+        this.refs.scroll.refresh()
+    }, 
+    },
+   
 }
 </script>
 <style scoped>
     .cart-list{
-        height: calc(100% - 44px - 49px);
+        height: calc(100vh - 44px - 49px - 40px );
     }
     .content{
-        height: 100vh;
+        height: 100%;
         overflow: hidden;
     }
 </style>
