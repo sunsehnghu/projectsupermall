@@ -41,7 +41,7 @@ export default {
     },
     computed: {
 		  showSubcategory() {
-		    // if (this.currentIndex === -1) return {}
+		    if (this.currentIndex === -1) return {}
         return this.categoryData[this.currentIndex].subcategories
       },
     },
